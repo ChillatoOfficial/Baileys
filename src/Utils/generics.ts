@@ -233,47 +233,6 @@ export function bindWaitForEvent<T extends keyof BaileysEventMap>(ev: BaileysEve
 export const bindWaitForConnectionUpdate = (ev: BaileysEventEmitter) => bindWaitForEvent(ev, 'connection.update')
 
 /**
- * utility that fetches latest baileys version from the master branch.
- * Use to ensure your WA connection is always on the latest version
- */
-export const fetchLatestBaileysVersion = async (options: RequestInit = {}) => {
-	const URL = 'https://raw.githubusercontent.com/WhiskeySockets/Baileys/master/src/Defaults/index.ts'
-	try {
-		const response = await fetch(URL, {
-			dispatcher: options.dispatcher,
-			method: 'GET',
-			headers: options.headers
-		})
-		if (!response.ok) {
-			throw new Boom(`Failed to fetch latest Baileys version: ${response.statusText}`, { statusCode: response.status })
-		}
-
-		const text = await response.text()
-		// Extract version from line 7 (const version = [...])
-		const lines = text.split('\n')
-		const versionLine = lines[6] // Line 7 (0-indexed)
-		const versionMatch = versionLine!.match(/const version = \[(\d+),\s*(\d+),\s*(\d+)\]/)
-
-		if (versionMatch) {
-			const version = [parseInt(versionMatch[1]!), parseInt(versionMatch[2]!), parseInt(versionMatch[3]!)] as WAVersion
-
-			return {
-				version,
-				isLatest: true
-			}
-		} else {
-			throw new Error('Could not parse version from Defaults/index.ts')
-		}
-	} catch (error) {
-		return {
-			version: baileysVersion as WAVersion,
-			isLatest: false,
-			error
-		}
-	}
-}
-
-/**
  * A utility that fetches the latest web version of whatsapp.
  * Use to ensure your WA connection is always on the latest version
  */

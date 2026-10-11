@@ -2,7 +2,6 @@ import type { proto } from '../../WAProto/index.js'
 import type { WAMessage, WAMessageContent } from '../Types/Message'
 import { generateWAMessageFromContent } from '../Utils/messages'
 
-// ── La tua API (invariata per compatibilità) ──
 
 export type ButtonItem =
   | { type: 'url'; text: string; url: string }
@@ -38,8 +37,6 @@ type MinimalSocket = {
 const NATIVE_FLOW = { v: '9', name: 'mixed' } as const
 const INTERACTIVE = { type: 'native_flow', v: '1' } as const
 const isGroup = (jid: string) => jid.endsWith('@g.us')
-
-// ── Builders puri (niente any) ──
 
 export const buildUrlButton = (text: string, url: string): NativeFlowBtn => ({
   name: 'cta_url',
@@ -118,8 +115,6 @@ export function createButtons(options: CustomInteractiveOptions): WAMessageConte
     },
   }
 }
-
-// ── Sender + Attach ──
 
 export const sendCustomButtons = async (sock: MinimalSocket, jid: string, options: CustomInteractiveOptions) => {
   const content = createButtons(options)

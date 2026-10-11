@@ -1,7 +1,7 @@
 <div align="center">
   <h1>Chillato Baileys</h1>
   <p><b>TypeScript & Node.js Library Creator for WhatsApp Bots</b></p>
-  <p>by ChillatoDev</p>
+  <p>by Chillato</p>
 </div>
 </br>
 

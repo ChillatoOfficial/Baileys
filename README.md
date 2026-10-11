@@ -21,6 +21,7 @@
 
 - *Template bottoni*
 - *Auth redis*
+- *Auto version whatsapp web*
 ---
 
 ---
@@ -78,3 +79,14 @@ sendCustomButtons(sock, jid, {
 })
 ```
 ---
+
+---
+# auto version whatsapp web exemple
+```javascript
+const {version, isLatest} = await getWAVersion()
+const sock = await makeWASocket({
+  auth: state,
+  version,
+  logger: pino({ level: "silent" }),
+});
+```javascript

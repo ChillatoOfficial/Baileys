@@ -2,7 +2,7 @@
   "name": "@chillato/baileys",
   "type": "module",
   "version": "1.0.0",
-  "description": "@chillato/baileys — a hardened fork of Baileys (WhatsApp Web API) with built-in interactive buttons, unified QR/pairing-code linking, smart reconnect, and anti-ban throttling.",
+  "description": "@chillato/baileys — a hardened fork of Baileys.",
   "keywords": [
     "whatsapp",
     "automation",

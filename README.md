@@ -21,7 +21,6 @@
 
 - *Template bottoni*
 - *Auth redis*
-- *auto versione di whatsapp*
 ---
 
 ---

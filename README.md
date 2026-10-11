@@ -79,8 +79,3 @@ sendCustomButtons(sock, jid, {
 ```
 ---
 
----
-
----
-
-

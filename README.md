@@ -19,8 +19,9 @@
 ---
 ## 🔭 Features
 
-- *Buttons implements*
+- *Template bottoni*
 - *Auth redis*
+- *auto versione di whatsapp*
 ---
 
 ---
@@ -78,4 +79,29 @@ sendCustomButtons(sock, jid, {
 })
 ```
 ---
+
+---
+# Auto version wa
+
+```javascript
+const { default: makeWASocket, DisconnectReason, useRedisAuthState, getWAVersion, useMultiFileAuthState} = require('@chillato/baileys')
+const {sendCustomButtons} = require("@chillato/baileys/lib/Extensions/buttons")
+const qrcode = require("qrcode-terminal")
+const P = require('pino')
+
+async function start() {
+  const { state, saveCreds } = await useMultiFileAuthState("session")
+
+  const version = await getWAVersion()
+    
+  const sock = makeWASocket({
+      version,
+      auth: state,
+      logger: P({ level: 'silent' }),
+    })  
+
+  sock.ev.on('creds.update', saveCreds)
+}
+```
+----
 

@@ -89,4 +89,4 @@ const sock = await makeWASocket({
   version,
   logger: pino({ level: "silent" }),
 });
-```javascript
+```

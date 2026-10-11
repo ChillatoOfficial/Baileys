@@ -1,3 +1,5 @@
+import type { WAVersion } from "../Types";
+
 interface WAVersionResponse {
   version: [number, number, number];
   isLatest: boolean;
@@ -38,7 +40,7 @@ export async function getWAVersion(): Promise<WAVersionResponse> {
   const clientRevision: number = Number(match[1]);
 
   return {
-    version: [2, 3000, clientRevision],
+    version: [2, 3000, clientRevision] as WAVersion,
     isLatest: true,
   };
 }

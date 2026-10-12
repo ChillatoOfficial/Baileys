@@ -24,7 +24,7 @@ function printChillatoBanner() {
   ██████╔╝██║  ██║██║███████╗███████╗   ██║   ███████║
   ╚═════╝ ╚═╝  ╚═╝╚═╝╚══════╝╚══════╝   ╚═╝   ╚══════╝
 \x1b[0m
-  \x1b[90mby\x1b[0m \x1b[1mChillato\x1b[0m \x1b[90m| v1.0.0 | github.com/ChillatoOfficial/Baileys\x1b[0m
+  \x1b[90mby\x1b[0m \x1b[1mChillato\x1b[0m \x1b[90m| v1.2 | github.com/ChillatoOfficial/Baileys\x1b[0m
 `)
 }
 

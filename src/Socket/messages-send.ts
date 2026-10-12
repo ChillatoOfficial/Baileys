@@ -27,6 +27,7 @@ import {
 	generateMessageIDV2,
 	generateParticipantHashV2,
 	generateWAMessage,
+	generateWAMessageFromContent,
 	getStatusCodeForMediaRetry,
 	getUrlFromDirectPath,
 	getWAUploadToServer,
@@ -69,6 +70,7 @@ import {
 } from '../WABinary'
 import { USyncQuery, USyncUser } from '../WAUSync'
 import { makeNewsletterSocket } from './newsletter'
+import { buildInteractiveAdditionalNodes, createButtons, type CustomInteractiveOptions } from '../Extensions/buttons.js'
 
 export const makeMessagesSocket = (config: SocketConfig) => {
 	const {
@@ -953,11 +955,11 @@ export const makeMessagesSocket = (config: SocketConfig) => {
 
 				const encodedMessageToSend = isMe
 					? encodeWAMessage({
-							deviceSentMessage: {
-								destinationJid,
-								message: messageToSend
-							}
-						})
+						deviceSentMessage: {
+							destinationJid,
+							message: messageToSend
+						}
+					})
 					: encodeWAMessage(messageToSend)
 
 				const { type, ciphertext: encryptedContent } = await signalRepository.encryptMessage({
@@ -1021,7 +1023,7 @@ export const makeMessagesSocket = (config: SocketConfig) => {
 			}
 
 			if (shouldIncludeDeviceIdentity) {
-				;(stanza.content as BinaryNode[]).push({
+				; (stanza.content as BinaryNode[]).push({
 					tag: 'device-identity',
 					attrs: {},
 					content: encodeSignedDeviceIdentity(authState.creds.account!, true)
@@ -1046,7 +1048,7 @@ export const makeMessagesSocket = (config: SocketConfig) => {
 					}
 					const reportingNode = await getMessageReportingToken(encoded, reportingMessage, reportingKey)
 					if (reportingNode) {
-						;(stanza.content as BinaryNode[]).push(reportingNode)
+						; (stanza.content as BinaryNode[]).push(reportingNode)
 						logger.trace({ jid }, 'added reporting token to message')
 					}
 				} catch (error: any) {
@@ -1081,7 +1083,7 @@ export const makeMessagesSocket = (config: SocketConfig) => {
 			}
 
 			if (tcTokenBuffer?.length && sock.serverProps.privacyTokenOn1to1) {
-				;(stanza.content as BinaryNode[]).push({
+				; (stanza.content as BinaryNode[]).push({
 					tag: 'tctoken',
 					attrs: {},
 					content: tcTokenBuffer
@@ -1089,7 +1091,7 @@ export const makeMessagesSocket = (config: SocketConfig) => {
 			}
 
 			if (additionalNodes && additionalNodes.length > 0) {
-				;(stanza.content as BinaryNode[]).push(...additionalNodes)
+				; (stanza.content as BinaryNode[]).push(...additionalNodes)
 			}
 
 			logger.debug({ msgId }, `sending message to ${participants.length} devices`)
@@ -1325,6 +1327,26 @@ export const makeMessagesSocket = (config: SocketConfig) => {
 
 			return message
 		},
+		sendButton: async (jid: string, options: CustomInteractiveOptions) => {
+			const content = await createButtons(
+				{ relayMessage, ev, user: { id: authState.creds.me!.id }, waUploadToServer } as any,
+				options
+			)
+
+			const fullMsg = generateWAMessageFromContent(jid, content, {
+				userJid: authState.creds.me!.id,
+				quoted: options.quoted as any,
+			})
+
+			await relayMessage(jid, fullMsg.message!, {
+				messageId: fullMsg.key.id!,
+				additionalNodes: buildInteractiveAdditionalNodes(jid),
+			})
+
+			ev.emit('messages.upsert', { messages: [fullMsg], type: 'append' })
+			return fullMsg
+		},
+
 		sendMessage: async (jid: string, content: AnyMessageContent, options: MiscMessageGenerationOptions = {}) => {
 			const userJid = authState.creds.me!.id
 			if (

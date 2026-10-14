@@ -1,5 +1,4 @@
 import { Boom } from '@hapi/boom'
-import { expandAppStateKeys } from 'whatsapp-rust-bridge'
 import { proto } from '../../WAProto/index.js'
 import type {
 	BaileysEventEmitter,
@@ -26,6 +25,7 @@ import type { ILogger } from './logger'
 import { LT_HASH_ANTI_TAMPERING } from './lt-hash'
 import { downloadContentFromMessage } from './messages-media'
 import { emitSyncActionResults, processContactAction } from './sync-action-utils'
+import { expandAppStateKeys } from 'whatsapp-rust-bridge'
 
 type FetchAppStateSyncKey = (keyId: string) => Promise<proto.Message.IAppStateSyncKeyData | null | undefined>
 
@@ -439,10 +439,10 @@ export const decodeSyncdSnapshot = async (
 		getAppStateSyncKey,
 		areMutationsRequired
 			? mutation => {
-					const index = mutation.syncAction.index?.toString()
-					mutationMap[index!] = mutation
-				}
-			: () => {},
+				const index = mutation.syncAction.index?.toString()
+				mutationMap[index!] = mutation
+			}
+			: () => { },
 		validateMacs
 	)
 	newState.hash = hash
@@ -516,10 +516,10 @@ export const decodePatches = async (
 				getAppStateSyncKey,
 				shouldMutate
 					? mutation => {
-							const index = mutation.syncAction.index?.toString()
-							mutationMap[index!] = mutation
-						}
-					: () => {},
+						const index = mutation.syncAction.index?.toString()
+						mutationMap[index!] = mutation
+					}
+					: () => { },
 				validateMacs
 			)
 		} catch (err) {
@@ -563,24 +563,24 @@ export const chatModificationToAppPatch = (mod: ChatModification, jid: string) =
 				lastMessageTimestamp: lastMsg?.messageTimestamp,
 				messages: lastMessages?.length
 					? lastMessages.map(m => {
-							if (!m.key?.id || !m.key?.remoteJid) {
-								throw new Boom('Incomplete key', { statusCode: 400, data: m })
-							}
+						if (!m.key?.id || !m.key?.remoteJid) {
+							throw new Boom('Incomplete key', { statusCode: 400, data: m })
+						}
 
-							if (isJidGroup(m.key.remoteJid) && !m.key.fromMe && !m.key.participant) {
-								throw new Boom('Expected not from me message to have participant', { statusCode: 400, data: m })
-							}
+						if (isJidGroup(m.key.remoteJid) && !m.key.fromMe && !m.key.participant) {
+							throw new Boom('Expected not from me message to have participant', { statusCode: 400, data: m })
+						}
 
-							if (!m.messageTimestamp || !toNumber(m.messageTimestamp)) {
-								throw new Boom('Missing timestamp in last message list', { statusCode: 400, data: m })
-							}
+						if (!m.messageTimestamp || !toNumber(m.messageTimestamp)) {
+							throw new Boom('Missing timestamp in last message list', { statusCode: 400, data: m })
+						}
 
-							if (m.key.participant) {
-								m.key.participant = jidNormalizedUser(m.key.participant)
-							}
+						if (m.key.participant) {
+							m.key.participant = jidNormalizedUser(m.key.participant)
+						}
 
-							return m
-						})
+						return m
+					})
 					: undefined
 			}
 		} else {
@@ -954,16 +954,16 @@ export const processSyncAction = (
 			association:
 				type === LabelAssociationType.Chat
 					? ({
-							type: LabelAssociationType.Chat,
-							chatId: syncAction.index[2],
-							labelId: syncAction.index[1]
-						} as ChatLabelAssociation)
+						type: LabelAssociationType.Chat,
+						chatId: syncAction.index[2],
+						labelId: syncAction.index[1]
+					} as ChatLabelAssociation)
 					: ({
-							type: LabelAssociationType.Message,
-							chatId: syncAction.index[2],
-							messageId: syncAction.index[3],
-							labelId: syncAction.index[1]
-						} as MessageLabelAssociation)
+						type: LabelAssociationType.Message,
+						chatId: syncAction.index[2],
+						messageId: syncAction.index[3],
+						labelId: syncAction.index[1]
+					} as MessageLabelAssociation)
 		})
 	} else if (action?.localeSetting?.locale) {
 		ev.emit('settings.update', { setting: 'locale', value: action.localeSetting.locale })
@@ -1021,11 +1021,11 @@ export const processSyncAction = (
 	): ChatUpdate['conditional'] {
 		return isInitialSync
 			? data => {
-					const chat = data.historySets.chats[id] || data.chatUpserts[id]
-					if (chat) {
-						return msgRange ? isValidPatchBasedOnMessageRange(chat, msgRange) : true
-					}
+				const chat = data.historySets.chats[id] || data.chatUpserts[id]
+				if (chat) {
+					return msgRange ? isValidPatchBasedOnMessageRange(chat, msgRange) : true
 				}
+			}
 			: undefined
 	}
 

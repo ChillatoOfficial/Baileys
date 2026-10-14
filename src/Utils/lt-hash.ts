@@ -1,4 +1,4 @@
-import { LTHashAntiTampering } from 'whatsapp-rust-bridge'
+import { LTHashAntiTampering } from "whatsapp-rust-bridge";
 
 /**
  * LT Hash is a summation based hash algorithm that maintains the integrity of a piece of data

@@ -33,7 +33,7 @@ const getTmpFilesDirectory = () => tmpdir()
 
 const getImageProcessingLibrary = async () => {
 	//@ts-ignore
-	const [jimp, sharp] = await Promise.all([import('jimp').catch(() => {}), import('sharp').catch(() => {})])
+	const [jimp, sharp] = await Promise.all([import('jimp').catch(() => { }), import('sharp').catch(() => { })])
 
 	if (sharp) {
 		return { sharp }
@@ -265,7 +265,7 @@ export async function getAudioWaveform(buffer: Buffer | string | Readable, logge
 			const blockStart = blockSize * i // the location of the first sample in the block
 			let sum = 0
 			for (let j = 0; j < blockSize; j++) {
-				sum = sum + Math.abs(rawData[blockStart + j]) // find the sum of all the samples in the block
+				sum = sum + Math.abs(rawData[blockStart + j] as any) // find the sum of all the samples in the block
 			}
 
 			filteredData.push(sum / blockSize) // divide the sum by the block size to get the average
@@ -285,7 +285,7 @@ export async function getAudioWaveform(buffer: Buffer | string | Readable, logge
 }
 
 export const toReadable = (buffer: Buffer) => {
-	const readable = new Readable({ read: () => {} })
+	const readable = new Readable({ read: () => { } })
 	readable.push(buffer)
 	readable.push(null)
 	return readable
@@ -776,7 +776,7 @@ const uploadWithFetch = async ({
 }: UploadParams): Promise<MediaUploadResult | undefined> => {
 	// Convert Node.js Readable to Web ReadableStream
 	const nodeStream = createReadStream(filePath)
-	const webStream = Readable.toWeb(nodeStream) as ReadableStream
+	const webStream = Readable.toWeb(nodeStream) as any
 	// Native fetch only accepts Undici-style dispatchers, not generic https Agents.
 	const dispatcher = typeof (agent as { dispatch?: unknown } | undefined)?.dispatch === 'function' ? agent : undefined
 
